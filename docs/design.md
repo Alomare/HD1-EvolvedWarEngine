@@ -31,7 +31,7 @@ Planets keep one size in map units, so a planet is a dot at the galaxy level, a 
 
 An operation is what HELLDIVERS already calls a planet: a list of missions, each a seed holding the time of day, shading, environment, variant, enemy, mission type and difficulty (`DifficultySettings.modulate_seed`). `src/launch.lua` builds that record from the operation (all values from the server, so every player builds the same missions), names it `evowar_op_<id>` (the text shows the HELLDIVERS 2 planet name through `obsidian.game_text`), and puts it in the first planet slot of that enemy in `available_planets`, keeping the slot position, region and reward, where mission end looks for it.
 
-Then the mod hands the planet to the galaxy map screen the way the screen does for its own picks: `current_planet`, `set_current_planet_on_exit`, `exit()`. The screen saves the planet as it leaves and picks the mission seed; the ship sees the new planet, plays the hyperspace jump (`MenuSpaceManager.planet_changed`) and opens the pods. Clients follow the host through the game's own messages.
+Then the mod hands the planet to the galaxy map screen as a pick made on that screen would be handed over: `current_planet`, `set_current_planet_on_exit`, `exit()`. The screen saves the planet as it leaves and picks the mission seed; the ship sees the new planet, plays the hyperspace jump (`MenuSpaceManager.planet_changed`) and opens the pods. Clients follow the host through the stock network messages.
 
 ## Mission end
 
