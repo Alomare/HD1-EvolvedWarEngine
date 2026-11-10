@@ -1,0 +1,33 @@
+{
+  "obsidian": 1,
+  "id": "alomare.evolvedwar",
+  "version": "0.1.0",
+  "name": {
+    "en": "Evolved War Engine"
+  },
+  "description": {
+    "en": "Plays an Evolved war hosted with Obsidian Commander. The galaxy map of the ship shows the HELLDIVERS 2 galaxy: sectors, planets, supply lines, campaigns, operations and the Major Order. Picking a mission jumps the ship to that planet and opens the hellpods, and the host reports each mission to the war. Every player in an Evolved war needs it. Outside an Evolved war it changes nothing."
+  },
+  "authors": [
+    "Alomare"
+  ],
+  "scope": "client",
+  "min_obsidian": "1.4.0",
+  "entry": "main.lua",
+  "source": "https://github.com/Alomare/HD1-EvolvedWarEngine",
+  "modules": [
+    "src/json.lua",
+    "src/galaxy.lua",
+    "src/palette.lua",
+    "src/sphere.lua",
+    "src/war.lua",
+    "src/view.lua",
+    "src/draw.lua",
+    "src/launch.lua",
+    "src/net.lua"
+  ],
+  "requires": [
+    "obsidian.api"
+  ],
+  "loader_api": 1
+}
