@@ -17,16 +17,10 @@ M.__index = M
 local exp, log, min, max, abs, sqrt, floor = math.exp, math.log, math.min, math.max, math.abs, math.sqrt, math.floor
 
 M.W, M.H = 1920, 1080
-M.GALAXY_SCALE = 455           -- pixels per map unit, whole galaxy
 M.PLANET_R = 0.012             -- a globe radius, in map units
-M.PLANET_PX = 235              -- globe radius on the planet level
-M.OPERATION_ZOOM = 2.2         -- the operation level, over the planet level
-M.CENTER = {
-	galaxy = { 960, 520 },
-	sector = { 900, 520 },
-	planet = { 820, 520 },
-	operation = { 820, 470 },
-}
+M.OPERATION_ZOOM = 1.55        -- the operation level, over the planet level
+M.SIDE = 460                   -- the width of a side column of panels (src/draw)
+M.MARGIN = 50                  -- from the edge of the window to the panels
 M.LEVELS = { "galaxy", "sector", "planet", "operation" }
 M.DEPTH = { galaxy = 1, sector = 2, planet = 3, operation = 4 }
 M.PITCH = 16                   -- the globe tilt on the planet level, in degrees
@@ -38,17 +32,40 @@ local function ease(dt, rate)
 end
 
 function M.new(galaxy)
-	local c = M.CENTER.galaxy
 	local v = setmetatable({
 		g = galaxy,
 		level = "galaxy", sector = nil, planet = nil, op = nil, mission = 1,
-		cam = { x = 0, y = 0, s = M.GALAXY_SCALE, cx = c[1], cy = c[2] },
-		target = { x = 0, y = 0, s = M.GALAXY_SCALE, cx = c[1], cy = c[2] },
+		cam = { x = 0, y = 0, s = 1, cx = 0, cy = 0 },
+		target = { x = 0, y = 0, s = 1, cx = 0, cy = 0 },
 		yaw = 0, pitch = M.PITCH, yaw_to = nil, pitch_to = nil,
-		hover = nil, focus = nil, buttons = {}, t = 0,
+		hover = nil, focus = nil, buttons = {}, t = 0, cursor = nil,
 		drag = nil, ftl = nil, notice = nil,
 	}, M)
+	v:set_screen(nil)
+	v:snap()
 	return v
+end
+
+-- The part of the frame the window shows, { l, b, r, t } in frame units: the frame scales with the
+-- player's ui_scale, so at 0.8 the window shows more than 1920x1080 of it. The galaxy takes the same
+-- share of the window at any ui_scale; the panels keep the game's scale and sit at the window edges.
+function M:set_screen(ext)
+	ext = ext or { l = 0, b = 0, r = M.W, t = M.H }
+	local e = self.ext
+	if e and abs(e.l - ext.l) < 0.5 and abs(e.r - ext.r) < 0.5 and abs(e.b - ext.b) < 0.5 and abs(e.t - ext.t) < 0.5 then return end
+	self.ext = { l = ext.l, b = ext.b, r = ext.r, t = ext.t }
+	local w, h = ext.r - ext.l, ext.t - ext.b
+	local cx = (ext.l + ext.r) / 2
+	-- Between the side columns, a little left of the middle: the right column is the wider one.
+	local mid = cx - 20
+	self.lay = {
+		gs = h * 0.41, gx = cx, gy = ext.b + h * 0.465,
+		box_w = max(480, w - 2 * (M.SIDE + M.MARGIN + 40)), box_h = h * 0.58, sx = mid, sy = ext.b + h * 0.47,
+		pr = h * 0.25, px = mid, py = ext.b + h * 0.46, oy = ext.b + h * 0.44,
+	}
+	local placed = e ~= nil
+	self:aim()
+	if not placed then self:snap() end
 end
 
 -- ---------------------------------------------------------------- transforms
@@ -65,7 +82,7 @@ end
 
 -- How far the camera has zoomed past the galaxy view, as a factor.
 function M:zoom()
-	return self.cam.s / M.GALAXY_SCALE
+	return self.cam.s / self.lay.gs
 end
 
 local function smooth(a, b, x)
@@ -93,31 +110,32 @@ end
 
 -- ---------------------------------------------------------------- where each level looks
 
-local function sector_frame(g, sid)
+local function sector_frame(g, sid, lay)
 	local s = g.sectors[sid + 1]
 	local x0, y0, x1, y1 = 1e9, 1e9, -1e9, -1e9
 	for _, pid in ipairs(s.planets) do
 		local p = g.planets[pid + 1]
 		x0, y0, x1, y1 = min(x0, p.x), min(y0, p.y), max(x1, p.x), max(y1, p.y)
 	end
-	local w, h = (x1 - x0) + 0.09, (y1 - y0) + 0.09
-	local scale = min(820 / w, 700 / h)
-	scale = max(M.GALAXY_SCALE * 2.6, min(M.GALAXY_SCALE * 9, scale))
-	return (x0 + x1) / 2, (y0 + y1) / 2, scale
+	-- Room around the planets for the globes and their names.
+	local w, h = (x1 - x0) + 0.11, (y1 - y0) + 0.13
+	local scale = min(lay.box_w / w, lay.box_h / h)
+	scale = max(lay.gs * 2.6, min(lay.gs * 9, scale))
+	return (x0 + x1) / 2, (y0 + y1) / 2 - 0.008, scale
 end
 
 function M:aim()
-	local t, g = self.target, self.g
-	local c = M.CENTER[self.level]
-	t.cx, t.cy = c[1], c[2]
+	local t, g, lay = self.target, self.g, self.lay
 	if self.level == "galaxy" then
-		t.x, t.y, t.s = 0, 0, M.GALAXY_SCALE
+		t.x, t.y, t.s, t.cx, t.cy = 0, 0, lay.gs, lay.gx, lay.gy
 	elseif self.level == "sector" then
-		t.x, t.y, t.s = sector_frame(g, self.sector)
+		t.x, t.y, t.s = sector_frame(g, self.sector, lay)
+		t.cx, t.cy = lay.sx, lay.sy
 	else
 		local p = g.planets[self.planet + 1]
 		t.x, t.y = p.x, p.y
-		t.s = M.PLANET_PX / M.PLANET_R * (self.level == "operation" and M.OPERATION_ZOOM or 1)
+		t.s = lay.pr / M.PLANET_R * (self.level == "operation" and M.OPERATION_ZOOM or 1)
+		t.cx, t.cy = lay.px, self.level == "operation" and lay.oy or lay.py
 	end
 end
 
@@ -263,6 +281,7 @@ function M:input(inp, war, is_host)
 	local function act(...) acts[#acts + 1] = { ... } end
 	if self.ftl then return acts end
 	local g = self.g
+	self.cursor = inp.cursor
 
 	-- Buttons the last frame drew (panels, rows, the breadcrumb) come first.
 	local on_button
@@ -373,7 +392,13 @@ function M:items(war)
 		end
 		table.sort(out, function(a, b) return a.angle > b.angle end)
 	elseif self.level == "sector" then
-		for _, pid in ipairs(g.sectors[self.sector + 1].planets) do out[#out + 1] = { kind = "planet", id = pid } end
+		-- Planets with a campaign first: that's where a pad or the keys most likely go.
+		local rest = {}
+		for _, pid in ipairs(g.sectors[self.sector + 1].planets) do
+			local list = war:campaign(pid) and out or rest
+			list[#list + 1] = { kind = "planet", id = pid }
+		end
+		for _, it in ipairs(rest) do out[#out + 1] = it end
 	elseif self.level == "planet" then
 		local c = war:campaign(self.planet)
 		for _, op in ipairs(c and c.operations or {}) do out[#out + 1] = { kind = "op", id = op.id } end

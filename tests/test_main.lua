@@ -75,7 +75,11 @@ return {
 		h.draw(kit, {}, 0.016)
 		truthy(#kit.ops > 100, "the map drew")
 		local War = obsidian.module("src/war")
-		local input = function(raw) w.hooks["MenuScreenCampaign.handle_input"](function() error("stock input reached") end, screen, raw) end
+		-- As the game gives them: the scroll wheel as numbers, 0 when idle.
+		local input = function(raw)
+			raw.scroll_up, raw.scroll_down = raw.scroll_up or 0, raw.scroll_down or 0
+			w.hooks["MenuScreenCampaign.handle_input"](function() error("stock input reached") end, screen, raw)
+		end
 		-- Keys first: the focus walks the sectors with campaigns, select zooms in, back comes out.
 		input({ right = true })
 		input({ select = true })
@@ -84,7 +88,7 @@ return {
 		for _ = 1, 30 do h.draw(F.kit(), {}, 1 / 15) end
 		-- Then the mouse on the first row of the campaign list (the panel at the top right).
 		_G.Mouse = {
-			axis = function() return { x = 1500, y = 1080 - 96 - 44 - 54 + 20 } end,
+			axis = function() return { x = 1500, y = 1080 - 190 - 44 - 38 } end,
 			axis_index = function() return 1 end,
 			button = function() return 0 end,
 			button_index = function() return 1 end,

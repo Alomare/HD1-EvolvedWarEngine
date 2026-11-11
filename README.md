@@ -6,16 +6,18 @@ Outside an Evolved war (the official war, a Vanilla Commander war) the mod does 
 
 ## The galaxy map
 
-The map has four levels, each a zoom into the one before:
+The screen is laid out as the galactic campaign screen of HELLDIVERS: the title with the tabs under it, the war stats and the Major Order at the left, a table at the right, the key prompts at the bottom. The map in the middle is the HELLDIVERS 2 galaxy. It has four levels, each a zoom into the one before, and each has a tab:
 
-1. **Galaxy.** The HELLDIVERS 2 galaxy layout and sectors: Super Earth in the middle, the Cyborgs to the left, the Bugs to the right and the Illuminates below. Sectors are tinted by the enemy holding planets there, supply lines link the planets, and a mark shows each campaign. The Major Order sits at the top left and the campaign list at the top right. The colours are the HELLDIVERS campaign colours, as in the war screens of Commander: Super Earth yellow, Bugs green, Cyborgs red, Illuminates blue.
-2. **Sector.** The planets of the sector as small globes, with who holds them and how each campaign stands.
-3. **Planet.** One globe, turning. The operations of the campaign sit on the surface. The panel shows the biome, the hazards, the liberation or defense progress, and how much one mission moves it.
+1. **Galaxy.** The HELLDIVERS 2 sectors around Super Earth: the Cyborgs to the left, the Bugs to the right and the Illuminates below. Enemy sectors carry the colour of the enemy and the diagonal stripes of the HELLDIVERS 2 map, with the name of the enemy across the territory; light lines mark where the sides meet. Each campaign has a mark and a callout with the planet and the progress. A sector under the pointer is named in a box beside it. The colours are the HELLDIVERS campaign colours, as in the war screens of Commander: Super Earth yellow, Bugs green, Cyborgs red, Illuminates blue.
+2. **Sector.** The planets of the sector as small globes with their names, who holds them and how each campaign stands, and the supply lines between them.
+3. **Planet.** One globe, as a hologram, turning. The operations of the campaign sit on the surface. The panel shows the biome, the hazards, the liberation or defense progress, and how much one mission moves it.
 4. **Operation.** The globe turns to the operation and the missions of the operation show around it, with the difficulty, the mission types and the time of day.
+
+The map takes the same share of the window at any interface scale; the panels follow the interface scale of the game.
 
 Picking a mission jumps the ship to that planet and opens the hellpods. The squad drops through the usual countdown, briefing and loadout, so other players follow the host as in any mission.
 
-Controls: the mouse picks and the wheel zooms; on a planet, dragging turns the globe. Keys and pads move between the items of a level with the arrows or shoulder buttons, select with the select button, and go back a level with the back button.
+Controls: the mouse picks and the wheel zooms; on a planet, dragging turns the globe. The keys of the game menus move between the items of a level (A and D), select (E) and go back a level (Q); a pad uses the shoulder buttons, A and B.
 
 ## The war
 

@@ -15,6 +15,10 @@ The mod finds the relay from `CampaignManager.url`, which the Obsidian loader po
 
 `main.lua` mutes the galaxy map screen (`obsidian.ui.mute("campaign")`), hides the globe of the three fronts (`warfront_unit`), takes the screen input (`MenuScreenCampaign.handle_input`), and draws with an `obsidian.ui` kit in a 1920x1080 frame. The starfield behind the map stays.
 
+The frame scales with the ui_scale of the player, so at the default 0.8 the window shows more than 1920x1080 of it. `main.lua` measures what the window shows each frame (`Application.resolution()` through `kit:point`) and hands it to the view and the drawing as `ext`: the galaxy is sized from the window height, the panels sit at the window edges at the game scale. The game gives some inputs as numbers, 0 when idle (the scroll wheel), so `read_input` counts a number only above 0.
+
+`Commander probe/war_run.py all --evolved` plays the screen in the game: every level by the keys, a sector under the pointer and a click, with screenshots.
+
 | Module | What it does |
 |---|---|
 | `src/galaxy.lua` | The HELLDIVERS 2 galaxy, generated: planets (name, position, sector, environment), sectors with the HELLDIVERS 2 outline and the convex pieces the gui fills, supply lines, every sector edge once |

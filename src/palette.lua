@@ -30,7 +30,8 @@ M.ENV = {
 	[3] = { 236, 98, 44 },
 	[4] = { 190, 196, 210 },
 }
-M.ENV_KEY = { [0] = "desert", [1] = "forest", [2] = "snow", [3] = "lava", [4] = "city" }
+M.EARTH = { 70, 140, 210 }          -- Super Earth: oceans, not the city biome
+M.ENV_KEY ={ [0] = "desert", [1] = "forest", [2] = "snow", [3] = "lava", [4] = "city" }
 
 M.WHITE = { 255, 255, 255 }
 M.TEXT = { 235, 235, 235 }
@@ -39,6 +40,9 @@ M.VALUE = { 250, 185, 90 }       -- CampaignSettings stat_value_color
 M.HOVER = { 240, 175, 80 }       -- the game's hovered text button
 M.YELLOW = { 255, 200, 0 }
 M.PANEL = { 8, 11, 14, 215 }
+M.BOX = { 10, 13, 17, 210 }         -- the dark boxes of the galactic campaign screen
+M.HEAD_BAR = { 52, 56, 62, 240 }    -- the header row of the tables there
+M.GOLD = { 196, 146, 28 }           -- the selected tab
 M.PANEL_LINE = { 255, 255, 255, 40 }
 M.SHADE = { 0, 0, 0, 150 }
 M.BAR_BACK = { 255, 255, 255, 28 }

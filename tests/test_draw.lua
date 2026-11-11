@@ -72,7 +72,7 @@ return {
 	end },
 	{ "text wraps to the width", function(F)
 		local kit = F.kit()
-		local lines = draw.wrap(kit, "Win thirty missions against the Cyborg forces before the deadline", 200, { size = 16 })
+		local lines = draw.wrap(kit, "Win thirty missions against the Cyborg forces before the deadline", 200, 16)
 		truthy(#lines > 1)
 		for _, l in ipairs(lines) do truthy(kit:measure(l, { size = 16 }) <= 200 or not l:find(" ")) end
 	end },

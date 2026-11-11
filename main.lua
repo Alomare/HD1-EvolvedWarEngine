@@ -86,7 +86,7 @@ local function G(key)
 	return nil
 end
 
--- Menu sounds go through the galaxy map's own sound world, as its screens play them.
+-- Menu sounds go through the sound world of the galaxy map, as the screens there play them.
 local function sound(name)
 	local tw = g("TimpaniWorld")
 	if screen and tw then
@@ -99,9 +99,18 @@ local function sound(name)
 	if api and api.audio then pcall(api.audio.play, name) end
 end
 
-local function prompt(name, fallback)
-	local ok, s = pcall(ui.prompt, name)
-	return ok and type(s) == "string" and s ~= "" and s or fallback
+-- The keys the prompts name, as the galactic campaign screen shows them ("Q BACK E SELECT"). The game's
+-- own prompt text carries key glyphs only its button overlay draws, so the words are plain here: the
+-- keyboard keys, or a pad's face buttons when the main player holds a pad.
+local KEYS = {
+	keyboard = { select = "E", back = "Q", zoom = "WHEEL", turn = "LMB" },
+	pad = { select = "A", back = "B", zoom = "LB / RB", turn = "R" },
+}
+local function prompt(name)
+	local settings, kb = g("GameSettings"), g("KEYBOARD_MOUSE_PAD_NUMBER")
+	local ok, pad = pcall(function() return settings.get_main_pad_number() end)
+	local set = (not ok or pad == nil or pad == kb) and KEYS.keyboard or KEYS.pad
+	return set[name]
 end
 
 -- ---------------------------------------------------------------- launching
@@ -181,16 +190,25 @@ local function read_input(s, raw)
 		local ok3, held = pcall(function() return mouse.button(mouse.button_index("left")) end)
 		inp.down = ok3 and type(held) == "number" and held > 0
 	end
-	inp.click = inputs.select_mouse and true or false
-	inp.pressed = inputs.select_mouse_down and true or false
-	inp.back = inputs.back and true or false
-	inp.select = inputs.select and true or false
-	inp.left = (inputs.left or inputs.d_left or inputs.left_shoulder) and true or false
-	inp.right = (inputs.right or inputs.d_right or inputs.right_shoulder) and true or false
-	inp.up = (inputs.up or inputs.d_up) and true or false
-	inp.down_key = (inputs.down or inputs.d_down) and true or false
-	inp.zoom_in = inputs.scroll_up and true or false
-	inp.zoom_out = inputs.scroll_down and true or false
+	-- The game gives some inputs as numbers, 0 when idle (the scroll wheel among them, seen in the game
+	-- on 2026-11-11), and 0 is true in Lua: a number counts only above 0.
+	local function on(...)
+		for i = 1, select("#", ...) do
+			local val = select(i, ...)
+			if val == true or (type(val) == "number" and val > 0) then return true end
+		end
+		return false
+	end
+	inp.click = on(inputs.select_mouse)
+	inp.pressed = on(inputs.select_mouse_down)
+	inp.back = on(inputs.back)
+	inp.select = on(inputs.select)
+	inp.left = on(inputs.left, inputs.d_left, inputs.left_shoulder)
+	inp.right = on(inputs.right, inputs.d_right, inputs.right_shoulder)
+	inp.up = on(inputs.up, inputs.d_up)
+	inp.down_key = on(inputs.down, inputs.d_down)
+	inp.zoom_in = on(inputs.scroll_up)
+	inp.zoom_out = on(inputs.scroll_down)
 	return inp
 end
 
@@ -200,9 +218,28 @@ local function is_host(s)
 	return not (type(parent) == "table" and parent.is_server == false)
 end
 
+-- The first input the map takes, for the log: whether the screen gives it input at all, and how.
+local told_input, told_keys = false, 0
+local function tell_input(s, inp)
+	if not told_input then
+		told_input = true
+		log("input: the map takes the screen input, pad " .. tostring(s.user_pad_number) .. (inp.cursor and string.format(", cursor %.0f %.0f", inp.cursor.x, inp.cursor.y) or ", no cursor"))
+	end
+	if told_keys >= 12 then return end
+	local on = {}
+	for _, k in ipairs({ "select", "back", "left", "right", "up", "down_key", "click", "zoom_in", "zoom_out" }) do
+		if inp[k] then on[#on + 1] = k end
+	end
+	if #on > 0 then
+		told_keys = told_keys + 1
+		log("input: " .. table.concat(on, " ") .. (inp.cursor and string.format(" at %.0f %.0f", inp.cursor.x, inp.cursor.y) or ""))
+	end
+end
+
 local function handle(s, raw)
 	if s.exit_timer then return end
 	local inp = read_input(s, raw)
+	tell_input(s, inp)
 	local acts = view:input(inp, war, is_host(s))
 	for _, a in ipairs(acts) do
 		if a[1] == "sound" then
@@ -257,6 +294,18 @@ obsidian.hook("MenuScreenCampaign", "handle_input", function(original, self, raw
 	end
 end)
 
+-- What the window shows of the 1920x1080 frame, in frame units: more than the frame when the
+-- player's ui_scale is under 1. nil (the plain frame) when the engine can't say.
+local function window_extent(kit)
+	local app = g("Application")
+	local ok, w, h = pcall(function() return app.resolution() end)
+	if not ok or type(w) ~= "number" or type(h) ~= "number" or w <= 0 or h <= 0 then return nil end
+	local l, b = kit:point(0, 0)
+	local r, t = kit:point(w, h)
+	if type(l) ~= "number" or type(t) ~= "number" or r - l < 100 or t - b < 100 then return nil end
+	return { l = l, b = b, r = r, t = t }
+end
+
 local function screen_handlers()
 	return {
 		enter = function(cur)
@@ -268,11 +317,18 @@ local function screen_handlers()
 		draw = function(kit, data, dt)
 			if not active() then return end
 			if screen then screen.kit = kit end
+			local ext = window_extent(kit)
+			local before = view.ext
+			view:set_screen(ext)
+			if view.ext ~= before then
+				local e = view.ext
+				log(string.format("screen l=%.0f b=%.0f r=%.0f t=%.0f", e.l, e.b, e.r, e.t))
+			end
 			view:update(dt or 0)
 			local ok, err = pcall(draw.frame, kit, {
-				v = view, war = war, now = now(), T = T, G = G, online = net.status == "ok",
-				keys = view.level == "planet" and { { prompt("select", "LMB"), T("key_select") }, { "LMB", T("key_turn") }, { prompt("back", "Q"), T("key_back") } }
-					or { { prompt("select", "LMB"), T("key_select") }, { "WHEEL", T("key_zoom") }, { prompt("back", "Q"), T("key_back") } },
+				v = view, war = war, now = now(), T = T, G = G, online = net.status == "ok", ext = view.ext,
+				keys = view.level == "planet" and { { prompt("select"), T("key_select") }, { prompt("turn"), T("key_turn") }, { prompt("back"), T("key_back") } }
+					or { { prompt("select"), T("key_select") }, { prompt("zoom"), T("key_zoom") }, { prompt("back"), T("key_back") } },
 			})
 			if not ok then
 				broken = true
