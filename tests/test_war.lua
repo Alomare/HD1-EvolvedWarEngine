@@ -13,9 +13,14 @@ return {
 		eq(galaxy.planets[1].name, "Super Earth")
 		eq(galaxy.planets[1].x, 0)
 		for _, p in ipairs(galaxy.planets) do
-			truthy(#p.cell >= 6 and #p.cell % 2 == 0, "cell of " .. p.name)
 			truthy(galaxy.sectors[p.sector + 1], "sector of " .. p.name)
 		end
+		for _, s in ipairs(galaxy.sectors) do
+			truthy(#s.shape >= 6 and #s.shape % 2 == 0, "outline of " .. s.name)
+			truthy(#s.pieces >= 1, "pieces of " .. s.name)
+			for _, piece in ipairs(s.pieces) do truthy(#piece >= 6 and #piece % 2 == 0, "piece of " .. s.name) end
+		end
+		eq(#galaxy.borders % 6, 0)
 		-- Cyborgs left, bugs right, Illuminate below.
 		local sums = { {}, {}, {} }
 		for _, p in ipairs(galaxy.planets) do

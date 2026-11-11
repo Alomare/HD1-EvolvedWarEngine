@@ -8,7 +8,7 @@ Outside an Evolved war (the official war, a Vanilla Commander war) the mod does 
 
 The map has four levels, each a zoom into the one before:
 
-1. **Galaxy.** The HELLDIVERS 2 galaxy layout: Super Earth in the middle, the Cyborgs to the left, the Bugs to the right and the Illuminates below. Sectors are tinted by who holds them, supply lines link the planets, and a mark shows each campaign. The Major Order sits at the top left and the campaign list at the top right.
+1. **Galaxy.** The HELLDIVERS 2 galaxy layout and sectors: Super Earth in the middle, the Cyborgs to the left, the Bugs to the right and the Illuminates below. Sectors are tinted by the enemy holding planets there, supply lines link the planets, and a mark shows each campaign. The Major Order sits at the top left and the campaign list at the top right. The colours match the war screens of Commander: Super Earth blue, Bugs orange yellow, Cyborgs red, Illuminates purple.
 2. **Sector.** The planets of the sector as small globes, with who holds them and how each campaign stands.
 3. **Planet.** One globe, turning. The operations of the campaign sit on the surface. The panel shows the biome, the hazards, the liberation or defense progress, and how much one mission moves it.
 4. **Operation.** The globe turns to the operation and the missions of the operation show around it, with the difficulty, the mission types and the time of day.
@@ -36,7 +36,7 @@ Only the host reports missions, once per squad.
 
 ## Credits
 
-The galaxy layout (planet names, positions, sectors and supply lines) comes from HELLDIVERS 2 by Arrowhead Game Studios, read through the community API at helldivers2.dev. No game art or files are included.
+The galaxy layout (planet names, positions, sectors and supply lines) comes from HELLDIVERS 2 by Arrowhead Game Studios, read through the community API at helldivers2.dev. The sector outlines were traced from the HELLDIVERS 2 map by the [HELLDIVERS 2 War History Central](https://github.com/crosswaveomega/helldiversplanettable) project. No game art or files are included.
 
 ## License
 

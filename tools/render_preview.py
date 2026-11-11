@@ -60,10 +60,28 @@ def render(path):
     def Y(y):
         return H - y
 
-    for _, op in ops:
+    seq = [op for _, op in ops]
+    k = 0
+    while k < len(seq):
+        op = seq[k]
+        k += 1
         kind = op["op"]
         c = rgba(op.get("c", [255, 255, 255, 255]))
         if c[3] <= 0:
+            continue
+        if kind == "poly" and k < len(seq) and seq[k]["op"] == "poly" and seq[k].get("c") == op.get("c") and seq[k]["z"] == op["z"]:
+            # A run of polygons in one colour (the pieces of a sector) fills through one mask, as the
+            # game draws shared edges once: no seams where the pieces meet.
+            run = [op]
+            while k < len(seq) and seq[k]["op"] == "poly" and seq[k].get("c") == op.get("c") and seq[k]["z"] == op["z"]:
+                run.append(seq[k])
+                k += 1
+            mask = Image.new("L", (W, H), 0)
+            md = ImageDraw.Draw(mask)
+            for r in run:
+                pts = r["pts"]
+                md.polygon([(pts[i], Y(pts[i + 1])) for i in range(0, len(pts), 2)], fill=255)
+            img.paste(Image.new("RGB", (W, H), c[:3]), mask=mask.point(lambda v: v * c[3] // 255))
             continue
         if kind == "rect":
             x0, y0, x1, y1 = op["x"], Y(op["y"] + op["h"]), op["x"] + op["w"], Y(op["y"])

@@ -22,6 +22,7 @@ end
 local function reset()
 	net.base, net.status, net.busy, net.next_poll, net.outbox = nil, "off", false, 0, {}
 	net.on_state, net.on_answer, net.player = nil, nil, nil
+	net.seen, net.told_error, net.told_http = nil, nil, nil
 end
 
 return {
@@ -31,6 +32,24 @@ return {
 		eq(net.base_of("https://api.example.com/1.0/"), nil)
 		eq(net.base_of("http://10.0.0.2:17495/0a1b2c/1.0/"), nil)
 		eq(net.base_of(nil), nil)
+	end },
+	{ "the log names each war address once, never the relay token", function()
+		reset()
+		local lines, log = {}, net.log
+		net.log = function(s) lines[#lines + 1] = s end
+		net.http = nil
+		net.update("https://api.example.com/1.0/", 0, false)
+		net.update("https://api.example.com/1.0/", 1, false)
+		net.update("http://127.0.0.1:17495/0a1b2c/1.0/", 2, false)
+		net.update(nil, 3, false)
+		net.log = log
+		eq(#lines, 4, table.concat(lines, " | "))
+		truthy(lines[1]:find("https://api.example.com", 1, true) and lines[1]:find("stock galaxy map", 1, true), lines[1])
+		truthy(lines[2]:find("http://127.0.0.1:17495", 1, true) and lines[2]:find("Obsidian relay", 1, true), lines[2])
+		truthy(lines[3]:find("refused", 1, true), lines[3])
+		truthy(lines[4]:find("war address none", 1, true), lines[4])
+		for _, l in ipairs(lines) do eq(l:find("0a1b2c", 1, true), nil, l) end
+		reset()
 	end },
 	{ "polls the state and hands it on", function(F)
 		reset()

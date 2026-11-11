@@ -117,26 +117,28 @@ local function draw_galaxy(kit, ctx, L)
 	local hover_sector = v.level == "galaxy" and v.hover and v.hover.kind == "sector" and v.hover.id
 	if v.level == "galaxy" and not hover_sector and v.focus and v.focus.kind == "sector" then hover_sector = v.focus.id end
 	local selected = v.level ~= "galaxy" and v.sector
-	-- Territory.
-	for _, p in ipairs(g.planets) do
-		local cell = p.cell
-		local pts, x0, y0, x1, y1 = {}, 1e9, 1e9, -1e9, -1e9
-		for i = 1, #cell, 2 do
-			local x, y = v:to_screen(cell[i], cell[i + 1])
-			pts[i], pts[i + 1] = x, y
-			x0, y0, x1, y1 = min(x0, x), min(y0, y), max(x1, x), max(y1, y)
-		end
-		if visible(x0, y0, x1, y1) then
-			local owner = war:owner(p.id)
-			local share = owner == 0 and 0.13 or 0.24
-			if p.sector == hover_sector then share = share + 0.12 end
-			if selected and p.sector ~= selected then share = share * 0.45 end
-			local c = war:campaign(p.id)
-			if c then share = share + 0.08 + 0.1 * pulse end
-			kit:poly(pts, alpha(P.FACTION[owner], share * a))
+	-- The HELLDIVERS 2 sectors, tinted by the enemy holding planets there (Super Earth when none does).
+	for _, s in ipairs(g.sectors) do
+		local sum = war:sector(s.id)
+		local enemy, share = s.owner, s.owner == 0 and 0 or 1
+		if sum then enemy, share = sum.enemy, sum.total > 0 and sum.held[sum.enemy] / sum.total or 0 end
+		if share <= 0 then enemy = 0 end
+		local fill = enemy == 0 and 0.1 or 0.12 + 0.16 * share
+		if s.id == hover_sector then fill = fill + 0.12 end
+		if selected and s.id ~= selected then fill = fill * 0.45 end
+		if sum and #sum.campaigns > 0 then fill = fill + 0.03 + 0.05 * pulse end
+		local c = alpha(P.FACTION[enemy], fill * a)
+		for _, piece in ipairs(s.pieces) do
+			local pts, x0, y0, x1, y1 = {}, 1e9, 1e9, -1e9, -1e9
+			for i = 1, #piece, 2 do
+				local x, y = v:to_screen(piece[i], piece[i + 1])
+				pts[i], pts[i + 1] = x, y
+				x0, y0, x1, y1 = min(x0, x), min(y0, y), max(x1, x), max(y1, y)
+			end
+			if visible(x0, y0, x1, y1) then kit:poly(pts, c) end
 		end
 	end
-	-- Sector borders, the rim.
+	-- Sector borders, every edge once; the outer edge of the galaxy is the rim.
 	local b = g.borders
 	for i = 1, #b, 6 do
 		local x1, y1 = v:to_screen(b[i], b[i + 1])
@@ -144,18 +146,10 @@ local function draw_galaxy(kit, ctx, L)
 		if visible(min(x1, x2), min(y1, y2), max(x1, x2), max(y1, y2)) then
 			local hot = hover_sector and (b[i + 4] == hover_sector or b[i + 5] == hover_sector)
 			local sel = selected and (b[i + 4] == selected or b[i + 5] == selected)
-			local c = (hot or sel) and alpha(P.WHITE, 150 / 255) or P.BORDER
-			line(kit, x1, y1, x2, y2, (hot or sel) and 2 or 1.2, alpha(c, a))
+			local rim = b[i + 5] < 0
+			local c = (hot or sel) and alpha(P.WHITE, 150 / 255) or (rim and P.RIM or P.BORDER)
+			line(kit, x1, y1, x2, y2, (hot or sel or rim) and 2 or 1.2, alpha(c, a))
 		end
-	end
-	local rim = {}
-	for i = 0, 119 do
-		local x, y = v:to_screen(g.rim * cos(i * pi / 60), g.rim * sin(i * pi / 60))
-		rim[#rim + 1], rim[#rim + 2] = x, y
-	end
-	for i = 1, #rim, 2 do
-		local j = (i + 1) % #rim + 1
-		line(kit, rim[i], rim[i + 1], rim[j], rim[j + 1], 2, alpha(P.RIM, a))
 	end
 	-- Supply lines.
 	local l = g.links

@@ -146,13 +146,16 @@ return {
 		eq(v.level, "planet", "still on the planet")
 		eq(has(acts, "launch"), nil)
 	end },
-	{ "picking the galaxy finds the planet territory", function()
+	{ "picking the galaxy finds the HELLDIVERS 2 sector under the point", function()
 		local v = View.new(galaxy)
+		local own, near = 0, 0
 		for _, p in ipairs(galaxy.planets) do
-			-- A point near the planet is in its own territory or a neighbour's: never outside.
-			local id = v:planet_at(p.x + 0.001, p.y + 0.001)
+			-- Every planet lies in a sector outline; the hand-traced outlines put three just over a border.
+			local id = v:sector_at(p.x, p.y)
 			truthy(id ~= nil, p.name)
+			if id == p.sector then own = own + 1 else near = near + 1 end
 		end
-		eq(v:planet_at(2, 2), nil)
+		truthy(own >= 270, "planets in their own sector: " .. own)
+		eq(v:sector_at(2, 2), nil)
 	end },
 }

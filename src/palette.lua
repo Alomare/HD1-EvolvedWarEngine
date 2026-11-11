@@ -1,21 +1,21 @@
--- The look: HELLDIVERS colours and type. The faction colours are the galactic campaign's own
--- (CampaignSettings colours: Super Earth yellow, bugs teal, cyborgs red, Illuminate blue); the panel
--- colours follow the game's menus (white text, orange values, dark boxes).
+-- The look: HELLDIVERS menus and type, with the colours of every Commander war (Super Earth blue,
+-- bugs orange yellow, cyborgs red, Illuminate purple, as the war screens draw them). The panel colours
+-- follow the game's menus (white text, orange values, dark boxes).
 local M = {}
 
 -- By faction: 0 Super Earth, 1 bugs, 2 cyborgs, 3 illuminates.
 M.FACTION = {
-	[0] = { 255, 170, 20 },
-	[1] = { 70, 220, 160 },
-	[2] = { 230, 80, 70 },
-	[3] = { 40, 150, 250 },
+	[0] = { 70, 160, 255 },
+	[1] = { 255, 165, 30 },
+	[2] = { 235, 72, 60 },
+	[3] = { 165, 100, 255 },
 }
 -- Brighter, for what is under attack or selected.
 M.FACTION_HOT = {
-	[0] = { 255, 205, 60 },
-	[1] = { 120, 255, 200 },
+	[0] = { 130, 195, 255 },
+	[1] = { 255, 205, 90 },
 	[2] = { 255, 120, 100 },
-	[3] = { 110, 190, 255 },
+	[3] = { 200, 150, 255 },
 }
 -- The text keys of the game for the factions' names, and what to show when a key is missing.
 M.FACTION_KEY = { [0] = "campaign_faction_superearth", [1] = "campaign_faction_bugs", [2] = "campaign_faction_cyborgs", [3] = "campaign_faction_illuminates" }
@@ -43,7 +43,7 @@ M.SHADE = { 0, 0, 0, 150 }
 M.BAR_BACK = { 255, 255, 255, 28 }
 M.LINK = { 255, 255, 255, 34 }
 M.BORDER = { 255, 255, 255, 70 }
-M.RIM = { 255, 200, 0, 90 }
+M.RIM = { 150, 190, 240, 110 }
 
 M.FONT = "body"
 M.FONT_LARGE = "body_large"

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0
+
+- New: the sectors of the HELLDIVERS 2 map, rings cut by stepped spokes, in place of the planet cells. A sector is tinted by the enemy holding planets there, and a click anywhere inside one opens it.
+- Changed: the colours of every Commander war, as the war screens draw them: Super Earth blue, Bugs orange yellow, Cyborgs red, Illuminates purple.
+- Changed: the log names the war address the game uses each time it changes (scheme, host and port, never the relay token), and says whether the Evolved map takes over or the stock map stays.
+- Fixed: planet names with an apostrophe or a moon letter, such as Widow's Harbor and Cerberus IIIc.
+
 ## 0.1.0
 
 - New: the galaxy map of an Evolved war, with the HELLDIVERS 2 galaxy layout: sectors tinted by who holds them, supply lines, campaign marks, the Major Order and the campaign list.

@@ -28,6 +28,13 @@ function M.base_of(url)
 	return root and (root .. "evolved/") or nil
 end
 
+-- A war URL for the log: the scheme, host and port only, never the path (the relay token is in it).
+function M.describe(url)
+	if type(url) ~= "string" then return "none" end
+	if url == "" then return "empty" end
+	return url:match("^(%a+://[^/]+)") or "not a URL"
+end
+
 local function request(method, url, body, done)
 	local http = M.http
 	if not http then return false end
@@ -54,7 +61,7 @@ function M.poll(now)
 		if code == 200 then
 			local state, err = json.decode(body)
 			if type(state) == "table" and state.owners then
-				if M.status ~= "ok" then M.log("evolved war found at " .. base) end
+				if M.status ~= "ok" then M.log("evolved war found through " .. M.describe(base)) end
 				M.status = "ok"
 				if M.on_state then M.on_state(state) end
 			else
@@ -66,11 +73,20 @@ function M.poll(now)
 			if M.status ~= "classic" then M.log("the war isn't an Evolved war") end
 			M.status = "classic"
 		else
-			if M.status == "ok" then M.log("war server unreachable (" .. tostring(code) .. ")") end
+			if M.status ~= "error" or not M.told_error then
+				M.log("war server unreachable (" .. tostring(code) .. ")")
+				M.told_error = true
+			end
 			M.status = M.status == "classic" and "classic" or "error"
 		end
 	end)
-	if not sent then M.busy = false end
+	if not sent then
+		M.busy = false
+		if not M.told_http then
+			M.log("the game refused the request to the war, no Evolved map this time")
+			M.told_http = true
+		end
+	end
 end
 
 -- Sends a report now and keeps it until the server has it.
@@ -107,9 +123,18 @@ end
 -- Once a frame (cheap): follows the game's war URL and polls on schedule. open: the map is up.
 function M.update(url, now, open)
 	local base = M.base_of(url)
+	-- Every change of the war address goes to the log once, so a war that stays on the stock map
+	-- always comes with the address the game had.
+	if url ~= M.seen then
+		M.seen = url
+		if base then
+			M.log("war address " .. M.describe(url) .. ": the Obsidian relay, the Evolved map takes over when the war answers")
+		else
+			M.log("war address " .. M.describe(url) .. ": not the Obsidian relay, the stock galaxy map stays")
+		end
+	end
 	if base ~= M.base then
 		M.base, M.status, M.busy, M.next_poll = base, base and "error" or "off", false, 0
-		if base then M.log("war relay " .. base) end
 	end
 	if not base then return end
 	if now >= M.next_poll then

@@ -212,12 +212,14 @@ local function inside(cell, x, y)
 end
 M.inside = inside
 
--- The planet whose territory holds the map point, or nil outside the galaxy.
-function M:planet_at(x, y)
+-- The sector whose outline holds the map point (one of the convex pieces of the outline), or nil
+-- outside the galaxy.
+function M:sector_at(x, y)
 	if x * x + y * y > self.g.rim * self.g.rim then return nil end
-	for _, p in ipairs(self.g.planets) do
-		local cell = p.cell
-		if #cell >= 6 and abs(p.x - x) < 0.35 and abs(p.y - y) < 0.35 and inside(cell, x, y) then return p.id end
+	for _, s in ipairs(self.g.sectors) do
+		for _, piece in ipairs(s.pieces) do
+			if inside(piece, x, y) then return s.id end
+		end
 	end
 end
 
@@ -386,16 +388,14 @@ end
 function M:pick(sx, sy, war)
 	if self.level == "galaxy" then
 		local mx, my = self:to_map(sx, sy)
-		local pid = self:planet_at(mx, my)
-		if pid then return { kind = "sector", id = self.g.planets[pid + 1].sector } end
+		local sid = self:sector_at(mx, my)
+		if sid then return { kind = "sector", id = sid } end
 	elseif self.level == "sector" then
 		local pid = self:globe_at(sx, sy)
 		if pid then return { kind = "planet", id = pid } end
 		local mx, my = self:to_map(sx, sy)
-		local other = self:planet_at(mx, my)
-		if other and self.g.planets[other + 1].sector ~= self.sector then
-			return { kind = "sector", id = self.g.planets[other + 1].sector }
-		end
+		local other = self:sector_at(mx, my)
+		if other and other ~= self.sector then return { kind = "sector", id = other } end
 	elseif self.level == "planet" or self.level == "operation" then
 		local c = war:campaign(self.planet)
 		if self.level == "operation" then

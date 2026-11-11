@@ -17,7 +17,7 @@ The mod finds the relay from `CampaignManager.url`, which the Obsidian loader po
 
 | Module | What it does |
 |---|---|
-| `src/galaxy.lua` | The HELLDIVERS 2 galaxy, generated: planets (name, position, sector, environment, Voronoi cell), sectors, supply lines, sector border edges |
+| `src/galaxy.lua` | The HELLDIVERS 2 galaxy, generated: planets (name, position, sector, environment), sectors with the HELLDIVERS 2 outline and the convex pieces the gui fills, supply lines, every sector edge once |
 | `src/war.lua` | The last state from the server, with lookups by planet, operation and sector, countdowns |
 | `src/view.lua` | The four levels, the camera (eased toward a target, scale in log space), picking, input, the jump |
 | `src/sphere.lua` | Globes: a point at a latitude and longitude, turned and tilted, drawn flat; grid lines; scanline chords |
