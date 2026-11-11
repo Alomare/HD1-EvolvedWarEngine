@@ -5,7 +5,7 @@ How the mod turns an Evolved war into HELLDIVERS missions. The server side is in
 ## Data flow
 
 ```
-Commander server  --GET /w/<id>/evolved/state-->  Obsidian relay  -->  mod (src/net.lua, every 8 s with the map up, 40 s otherwise)
+Commander server  --GET /w/<id>/evolved/state-->  Obsidian relay  <--POST <token>/evolved/state--  mod (src/net.lua, every 8 s with the map up, 40 s otherwise; the game sends every request as POST)
                   <--POST /w/<id>/evolved/report-- Obsidian relay  <--  mod (host only, at mission end)
 ```
 
