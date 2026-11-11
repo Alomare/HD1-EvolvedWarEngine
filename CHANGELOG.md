@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1
+
+- Changed: the HELLDIVERS campaign colours are back: Super Earth yellow, Bugs green, Cyborgs red, Illuminates blue.
+
 ## 0.2.0
 
 - New: the sectors of the HELLDIVERS 2 map, rings cut by stepped spokes, in place of the planet cells. A sector is tinted by the enemy holding planets there, and a click anywhere inside one opens it.

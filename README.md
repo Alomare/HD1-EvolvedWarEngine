@@ -8,7 +8,7 @@ Outside an Evolved war (the official war, a Vanilla Commander war) the mod does 
 
 The map has four levels, each a zoom into the one before:
 
-1. **Galaxy.** The HELLDIVERS 2 galaxy layout and sectors: Super Earth in the middle, the Cyborgs to the left, the Bugs to the right and the Illuminates below. Sectors are tinted by the enemy holding planets there, supply lines link the planets, and a mark shows each campaign. The Major Order sits at the top left and the campaign list at the top right. The colours match the war screens of Commander: Super Earth blue, Bugs orange yellow, Cyborgs red, Illuminates purple.
+1. **Galaxy.** The HELLDIVERS 2 galaxy layout and sectors: Super Earth in the middle, the Cyborgs to the left, the Bugs to the right and the Illuminates below. Sectors are tinted by the enemy holding planets there, supply lines link the planets, and a mark shows each campaign. The Major Order sits at the top left and the campaign list at the top right. The colours are the HELLDIVERS campaign colours, as in the war screens of Commander: Super Earth yellow, Bugs green, Cyborgs red, Illuminates blue.
 2. **Sector.** The planets of the sector as small globes, with who holds them and how each campaign stands.
 3. **Planet.** One globe, turning. The operations of the campaign sit on the surface. The panel shows the biome, the hazards, the liberation or defense progress, and how much one mission moves it.
 4. **Operation.** The globe turns to the operation and the missions of the operation show around it, with the difficulty, the mission types and the time of day.
