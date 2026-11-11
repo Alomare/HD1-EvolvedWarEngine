@@ -61,6 +61,9 @@ return {
 		net.update("http://127.0.0.1:1/ab/1.0/", 100, true)
 		eq(net.status, "ok")
 		eq(sent[1].url, "http://127.0.0.1:1/ab/evolved/state")
+		-- POST with a body, the only kind of request the game sends: a GET never reached the war in game.
+		eq(sent[1].method, "POST")
+		eq(sent[1].body, "{}")
 		eq(got.owners[2], 1)
 		-- Not again before the interval.
 		net.update("http://127.0.0.1:1/ab/1.0/", 101, true)
@@ -80,7 +83,7 @@ return {
 		reset()
 		local up = false
 		local http, sent = fake_http(function(req)
-			if req.method == "GET" then return { 200, '{"owners":[0]}' } end
+			if req.url:match("/state$") then return { 200, '{"owners":[0]}' } end
 			if up then return { 200, '{"credited":true}' } end
 			return { 502, "down" }
 		end)

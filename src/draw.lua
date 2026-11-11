@@ -93,8 +93,12 @@ local function header(kit, s, x, y, c)
 	text(kit, upper(s), x, y, 17, c or P.YELLOW, { tracking = 2 })
 end
 
+-- The mod's own words: the game's campaign_faction_* keys read "Cyborg Homeworld" and the like (seen
+-- in the game, 2026-11-11), which isn't a side's name.
 local function faction_name(ctx, f)
-	return ctx.G(P.FACTION_KEY[f]) or P.FACTION_WORDS[f]
+	local s = ctx.T(P.FACTION_TEXT[f])
+	if type(s) ~= "string" or s == "" or s == P.FACTION_TEXT[f] then return P.FACTION_WORDS[f] end
+	return s
 end
 M.faction_name = faction_name
 

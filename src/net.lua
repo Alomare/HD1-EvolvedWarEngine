@@ -55,7 +55,9 @@ function M.poll(now)
 	if not M.base or M.busy then return end
 	M.busy = true
 	local base = M.base
-	local sent = request("GET", base .. "state", nil, function(code, body)
+	-- POST, not GET: the game sends only POST, and in the game a GET from the mod never reached the
+	-- war (first playtests, 2026-11-11). Obsidian's relay takes POST for the state and asks the war with GET.
+	local sent = request("POST", base .. "state", "{}", function(code, body)
 		M.busy = false
 		if base ~= M.base then return end
 		if code == 200 then
@@ -69,8 +71,12 @@ function M.poll(now)
 				M.status = "error"
 			end
 		elseif code == 404 then
-			-- A Vanilla war: nothing for this mod to do.
-			if M.status ~= "classic" then M.log("the war isn't an Evolved war") end
+			-- A Vanilla war: nothing for this mod to do. The answer says who refused: the war server
+			-- ("not an Evolved war") or an Obsidian too old to carry the call ("not found").
+			if M.status ~= "classic" then
+				local said = type(body) == "string" and body:sub(1, 80):gsub("[%c]", " ") or ""
+				M.log("the war isn't an Evolved war (404" .. (said ~= "" and (": " .. said) or "") .. ")")
+			end
 			M.status = "classic"
 		else
 			if M.status ~= "error" or not M.told_error then

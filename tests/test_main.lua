@@ -29,7 +29,7 @@ local function world(F)
 			function req:add_header(k, v) self.headers[k] = v end
 			function req:set_body(b) self.body = b end
 			function req:send()
-				if method == "GET" then cb(self, 200, state_body) else posts[#posts + 1] = self.body cb(self, 200, '{"credited":true}') end
+				if url:match("/state$") then cb(self, 200, state_body) else posts[#posts + 1] = self.body cb(self, 200, '{"credited":true}') end
 			end
 			return req
 		end,

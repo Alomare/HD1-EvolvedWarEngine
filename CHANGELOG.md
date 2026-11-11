@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.2
+
+- Fixed: the galaxy map of an Evolved war stayed the stock one. The game sends every request as POST, so asking for the war with GET never reached it; the mod now asks with POST. Needs Obsidian built on 2026-11-11 or later, whose relay takes it.
+- Fixed: the names of the sides read "Cyborg Homeworld" and the like, from the game's text, in place of Cyborgs, Bugs and Illuminates.
+- Changed: when the war refuses the request, the log says who refused it.
+
 ## 0.2.1
 
 - Changed: the HELLDIVERS campaign colours are back: Super Earth yellow, Bugs green, Cyborgs red, Illuminates blue.

@@ -1,6 +1,10 @@
 {
   "galactic_war": "Galactic War",
   "super_earth": "Super Earth",
+  "faction_superearth": "Super Earth",
+  "faction_bugs": "Bugs",
+  "faction_cyborgs": "Cyborgs",
+  "faction_illuminates": "Illuminates",
   "major_order": "Major Order",
   "campaigns": "Campaigns",
   "operations": "Operations",

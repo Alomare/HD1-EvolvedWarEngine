@@ -18,8 +18,8 @@ M.FACTION_HOT = {
 	[2] = { 255, 120, 100 },
 	[3] = { 110, 190, 255 },
 }
--- The text keys of the game for the factions' names, and what to show when a key is missing.
-M.FACTION_KEY = { [0] = "campaign_faction_superearth", [1] = "campaign_faction_bugs", [2] = "campaign_faction_cyborgs", [3] = "campaign_faction_illuminates" }
+-- The mod's text keys for the names of the sides, and what to show when a key is missing.
+M.FACTION_TEXT = { [0] = "faction_superearth", [1] = "faction_bugs", [2] = "faction_cyborgs", [3] = "faction_illuminates" }
 M.FACTION_WORDS = { [0] = "Super Earth", [1] = "Bugs", [2] = "Cyborgs", [3] = "Illuminates" }
 
 -- Planet surfaces by HELLDIVERS environment: desert, forest, snow, lava, city.
