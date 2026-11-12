@@ -2,7 +2,7 @@
 
 ## 0.3.0
 
-- New: the war screen redone after the two games. The HELLDIVERS 2 galaxy fills the window, enemy sectors carry the stripes of the HELLDIVERS 2 map and the enemy names run across their territory, and planets show only once a sector is open. Around it, the galactic campaign screen of HELLDIVERS: the title and tabs, the war stats, callouts with progress bars on the campaigns, table panels and key prompts.
+- New: the war screen redone after the two games. The HELLDIVERS 2 galaxy fills the window, enemy sectors carry the stripes of the HELLDIVERS 2 map and the enemy names run across the territory each enemy holds, and planets show only once a sector is open. Around it, the galactic campaign screen of HELLDIVERS: the title and tabs, the war stats, callouts with progress bars on the campaigns, table panels and key prompts.
 - New: the sector under the pointer is named in a box beside it, with the planets and who holds them.
 - Changed: larger text throughout, and planets, operations and missions named on plates.
 - Changed: the map takes the same share of the window at any interface scale, and the panels sit at the edges of the window.
@@ -12,8 +12,8 @@
 
 ## 0.2.2
 
-- Fixed: the galaxy map of an Evolved war stayed the stock one. The game sends every request as POST, so asking for the war with GET never reached it; the mod now asks with POST. Needs Obsidian built on 2026-11-11 or later, whose relay takes it.
-- Fixed: the names of the sides read "Cyborg Homeworld" and the like, from the game's text, in place of Cyborgs, Bugs and Illuminates.
+- Fixed: the galaxy map of an Evolved war stayed the stock one. The game sends every request as POST, so asking for the war with GET never reached it; the mod now asks with POST. Needs Obsidian built on 2026-11-11 or later, as the relay in older builds does not pass POST on.
+- Fixed: the names of the sides read "Cyborg Homeworld" and the like, from the game text, in place of Cyborgs, Bugs and Illuminates.
 - Changed: when the war refuses the request, the log says who refused it.
 
 ## 0.2.1
